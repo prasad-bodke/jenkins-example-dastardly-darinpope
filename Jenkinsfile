@@ -14,12 +14,12 @@ pipeline {
     stage ("Docker run Dastardly from Burp Suite Scan") {
       steps {
         cleanWs()
-        bat '"'
+        bat "
           docker run --rm --user $(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
           -e DASTARDLY_TARGET_URL=${DASTARDLY_TARGET_URL} \
           -e DASTARDLY_OUTPUT_FILE=${WORKSPACE}/${JUNIT_TEST_RESULTS_FILE} \
           ${IMAGE_WITH_TAG}
-        '"'
+        "
       }
     }
   }
