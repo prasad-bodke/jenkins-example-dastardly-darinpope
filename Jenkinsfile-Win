@@ -4,6 +4,7 @@ pipeline {
     set "DASTARDLY_TARGET_URL=https://staging.criticalmention.com/app/#/user/login"
     set "IMAGE_WITH_TAG=public.ecr.aws/portswigger/dastardly:latest"
     set "JUNIT_TEST_RESULTS_FILE=dastardly-report.xml"
+    set "WORKSPACE=C:\ProgramData\Jenkins\.jenkins\workspace\Dastardly_Demo"
   }
   stages {
     stage ("Docker Pull Dastardly from Burp Suite container image") {
