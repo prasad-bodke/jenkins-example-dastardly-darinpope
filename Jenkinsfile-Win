@@ -4,7 +4,7 @@ pipeline {
         DASTARDLY_TARGET_URL = 'https://ginandjuice.shop/'
         IMAGE_WITH_TAG = 'public.ecr.aws/portswigger/dastardly:latest'
         JUNIT_TEST_RESULTS_FILE = 'dastardly-report.xml'
-        WORKSPACE_UNIX = bat(script: "cygpath -u %WORKSPACE%", returnStatus: true).trim()
+        WORKSPACE_UNIX = bat(script: 'echo %WORKSPACE:/=/%', returnStatus: true).trim()
   }
   stages {
     stage ("Docker Pull Dastardly from Burp Suite container image") {
