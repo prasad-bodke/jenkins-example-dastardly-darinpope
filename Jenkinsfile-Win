@@ -9,7 +9,7 @@ pipeline {
     stage ("Docker Pull Dastardly from Burp Suite container image") {
       steps {
         // Use double percent signs to access environment variables in CMD
-        def cmdPull = """
+        set cmdPull = """
             docker pull %IMAGE_WITH_TAG%
         """
         bat(script: cmdPull)
@@ -20,7 +20,7 @@ pipeline {
         cleanWs()
         script {
                     // Use double percent signs to access environment variables in CMD
-                    def cmdRun = """
+                    set cmdRun = """
                         docker run --rm --user %USERDOMAIN\\%USERNAME% -v %WORKSPACE%:%WORKSPACE% -e DASTARDLY_TARGET_URL=%DASTARDLY_TARGET_URL% -e DASTARDLY_OUTPUT_FILE=%WORKSPACE%\\%JUNIT_TEST_RESULTS_FILE% %IMAGE_WITH_TAG%
                     """
                     bat(script: cmdRun)
