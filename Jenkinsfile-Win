@@ -1,34 +1,23 @@
-pipeline {
-  agent any
-  environment {
-    DASTARDLY_TARGET_URL='https://staging.criticalmention.com/'
-    IMAGE_WITH_TAG='public.ecr.aws/portswigger/dastardly:latest'
-    JUNIT_TEST_RESULTS_FILE='dastardly-report.xml'
-  }
-  stages {
-    stage ("Docker Pull Dastardly from Burp Suite container image") {
-      steps {
-        bat "docker pull ${IMAGE_WITH_TAG}"
-      }
-    }
-    stage ("Docker run Dastardly from Burp Suite Scan") {
-      steps {
-        cleanWs()
-        set containerId=%%i
-        echo %containerId%
-        
-        bat '"'
-          docker run --rm --user %containerId% -v ${WORKSPACE}:${WORKSPACE}:rw \
-          -e DASTARDLY_TARGET_URL=${DASTARDLY_TARGET_URL} \
-          -e DASTARDLY_OUTPUT_FILE=${WORKSPACE}/${JUNIT_TEST_RESULTS_FILE} \
-          ${IMAGE_WITH_TAG}
-        '"'
-      }
-    }
-  }
-  post {
-    always {
-      junit testResults: "${JUNIT_TEST_RESULTS_FILE}", skipPublishingChecks: true
-    }
-  }
-}
+@echo off
+setlocal enabledelayedexpansion
+
+:: Define environment variables
+set "DASTARDLY_TARGET_URL=https://staging.criticalmention.com/app/#/user/login"
+set "IMAGE_WITH_TAG=public.ecr.aws/portswigger/dastardly:latest"
+set "JUNIT_TEST_RESULTS_FILE=dastardly-report.xml"
+set "WORKSPACE=C:\your\workspace\path"
+
+:: Stage 1: Docker Pull Dastardly from Burp Suite container image
+echo Pulling Docker image: %IMAGE_WITH_TAG%
+docker pull %IMAGE_WITH_TAG%
+
+:: Stage 2: Docker run Dastardly from Burp Suite Scan
+echo Running Dastardly container
+docker run --rm --user %USERNAME% -v "%WORKSPACE%:%WORKSPACE%:rw" -e DASTARDLY_TARGET_URL=%DASTARDLY_TARGET_URL% -e DASTARDLY_OUTPUT_FILE=%WORKSPACE%\%JUNIT_TEST_RESULTS_FILE% %IMAGE_WITH_TAG%
+
+:: Post-Stage: JUnit Test Results
+echo Publishing JUnit test results
+:: Note: You will need to adapt this part to your actual JUnit test result publishing mechanism in Windows.
+
+:: End of script
+endlocal
