@@ -4,9 +4,7 @@ pipeline {
         DASTARDLY_TARGET_URL = 'https://ginandjuice.shop/'
         IMAGE_WITH_TAG = 'public.ecr.aws/portswigger/dastardly:latest'
         JUNIT_TEST_RESULTS_FILE = 'dastardly-report.xml'
-        WORKSPACE = env.WORKSPACE
-echo "Current workspace is env... %env.WORKSPACE%"
-echo "Current workspace is workspace... $WORKSPACE"
+        WORKSPACE = C:\ProgramData\Jenkins\.jenkins\workspace\Dastardly_Demo
   }
   stages {
     stage ("Docker Pull Dastardly from Burp Suite container image") {
