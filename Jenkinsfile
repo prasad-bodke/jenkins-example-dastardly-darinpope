@@ -8,8 +8,6 @@ pipeline {
   stages {
     stage ("Docker Pull Dastardly from Burp Suite container image") {
       steps {
-        wsl
-        
         sh 'docker pull ${IMAGE_WITH_TAG}'
       }
     }
