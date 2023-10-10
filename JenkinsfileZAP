@@ -73,6 +73,16 @@ pipeline {
              }
         }
 
+        stage('copy context file into container if exists') {
+            steps {
+                script {
+                    sh '''
+                    docker cp ./contexts/CMContext.context owasp-prasad:/home/zap/default
+                    '''
+                }
+            }
+        }
+
         stage('Scanning target on owasp container') {
             steps {
                 script {
