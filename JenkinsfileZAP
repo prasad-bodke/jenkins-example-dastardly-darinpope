@@ -1,7 +1,8 @@
 def scan_type
 def target
 def authToken
-def contextName = "myContext" // Name of the ZAP context
+def contextName = "CTVAuthentication.context" // Name of the ZAP context
+def scriptName = "CTVAuth.js"  // Name of script file
 
 pipeline {
     agent any
@@ -9,8 +10,8 @@ pipeline {
     environment {
         AUTH_USERNAME = 'Tester01'
         AUTH_PASSWORD = 'welcome123'
-        CONTAINER_NAME = 'owasp'
-        AUTH_SCRIPT_PATH = '/path/to/your-auth-script.script'
+        CONTAINER_NAME = 'owasp-prasad'
+        FILE_PATH = '/context'
     }
 
     parameters {
@@ -81,8 +82,8 @@ pipeline {
                 script {
                     // Upload the ZAP context file and authentication script
                     sh """
-                    docker cp /path/to/your-context-file.context owasp:/zap/wrk/$contextName.context
-                    docker cp $AUTH_SCRIPT_PATH owasp:/zap/wrk/auth-script.script
+                    docker cp $FILE_PATH/$contextName owasp:/zap/wrk/$contextName
+                    docker cp $FILE_PATH/$scriptName owasp:/zap/wrk/$scriptName
                     """
                 }
             }
@@ -95,7 +96,7 @@ pipeline {
                     echo "----> scan_type: $scan_type"
 
                     // Load your ZAP Context using the ZAP API
-                    sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?contextName=$contextName&file=/zap/wrk/$contextName.context"
+                    sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?contextName=$contextName&file=/zap/wrk/$contextName"
 
                     if (scan_type == "Baseline") {
                         sh """
@@ -103,7 +104,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-scriptname auth-script.script"
+                        -J "-scriptname $scriptName"
                         """
                     } else if (scan_type == "APIS") {
                         sh """
@@ -111,7 +112,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-scriptname auth-script.script"
+                        -J "-scriptname $scriptName"
                         """
                     } else if (scan_type == "Full") {
                         sh """
@@ -119,7 +120,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-scriptname auth-script.script"
+                        -J "-scriptname $scriptName"
                         """
                     } else {
                         echo "Something went wrong..."
