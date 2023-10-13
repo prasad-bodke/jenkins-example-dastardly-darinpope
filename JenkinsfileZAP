@@ -157,6 +157,13 @@ pipeline {
             sh '''
             docker stop owasp
             docker rm owasp
+
+            docker stop CONTAINER_NAME
+            docker rm CONTAINER_NAME
+            docker stop owasp-prasad
+            docker rm owasp-prasad
+
+
             '''
         }
     }
