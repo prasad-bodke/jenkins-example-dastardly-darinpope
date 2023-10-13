@@ -83,6 +83,8 @@ pipeline {
                     sh """
                     docker cp $FILE_PATH/$contextName owasp:/zap/wrk/$contextName
                     docker cp $FILE_PATH/$scriptName owasp:/zap/wrk/$scriptName
+                    echo "The context and script file is copied"
+                    sh "docker exec owasp ls /zap/wrk"
                     """
                 }
             }
