@@ -10,7 +10,7 @@ pipeline {
     environment {
         AUTH_USERNAME = 'Tester01'
         AUTH_PASSWORD = 'welcome123'
-        FILE_PATH = '/context'
+        FILE_PATH = 'context'
     }
 
     parameters {
