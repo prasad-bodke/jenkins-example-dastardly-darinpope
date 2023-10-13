@@ -10,7 +10,6 @@ pipeline {
     environment {
         AUTH_USERNAME = 'Tester01'
         AUTH_PASSWORD = 'welcome123'
-        CONTAINER_NAME = 'owasp-prasad'
         FILE_PATH = '/context'
     }
 
@@ -38,22 +37,22 @@ pipeline {
             }
         }
 
-        stage('Setting up $CONTAINER_NAME ZAP Docker container') {
+        stage('Setting up owasp ZAP Docker container') {
             steps {
                 script {
-                    echo "Pulling up the latest stable $CONTAINER_NAME ZAP container --> Start"
+                    echo "Pulling up the latest stable owasp ZAP container --> Start"
                     sh 'docker pull owasp/zap2docker-stable:latest'
-                    echo "Pulling up the latest stable $CONTAINER_NAME ZAP container --> End"
+                    echo "Pulling up the latest stable owasp ZAP container --> End"
 
                     echo "Starting ZAP container and exposing the API port --> Start"
-                    sh """docker run -d --name $CONTAINER_NAME -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
+                    sh """docker run -d --name owasp -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
 
                     // Wait for a brief moment to allow the container to fully start
                     sleep(time: 30, unit: 'SECONDS')
 
                     echo "Printing container logs:"
                     sh '''
-                    docker logs $CONTAINER_NAME
+                    docker logs owasp
                     '''
 
                     sh '''
@@ -71,7 +70,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker exec $CONTAINER_NAME mkdir /zap/wrk
+                    docker exec owasp mkdir /zap/wrk
                     '''
                 }
             }
@@ -89,7 +88,7 @@ pipeline {
             }
         }
 
-        stage('Scanning target on $CONTAINER_NAME container') {
+        stage('Scanning target on owasp container') {
             steps {
                 script {
                     scan_type = "${params.SCAN_TYPE}"
@@ -100,7 +99,7 @@ pipeline {
 
                     if (scan_type == "Baseline") {
                         sh """
-                        docker exec $CONTAINER_NAME zap-baseline.py \
+                        docker exec owasp zap-baseline.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
@@ -108,7 +107,7 @@ pipeline {
                         """
                     } else if (scan_type == "APIS") {
                         sh """
-                        docker exec $CONTAINER_NAME zap-api-scan.py \
+                        docker exec owasp zap-api-scan.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
@@ -116,7 +115,7 @@ pipeline {
                         """
                     } else if (scan_type == "Full") {
                         sh """
-                        docker exec $CONTAINER_NAME zap-full-scan.py \
+                        docker exec owasp zap-full-scan.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
@@ -128,7 +127,7 @@ pipeline {
 
                     // Capture ZAP logs
                     sh """
-                    docker logs $CONTAINER_NAME > zap_logs.txt
+                    docker logs owasp > zap_logs.txt
                     """
                 }
             }
