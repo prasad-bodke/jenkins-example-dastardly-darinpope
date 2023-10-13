@@ -19,7 +19,7 @@ pipeline {
                 description: 'Type of scan to perform inside the container',
                 name: 'SCAN_TYPE')
 
-        string(defaultValue: "https://qa2.criticalmention.com/allmedia/search",
+        string(defaultValue: "https://qa2.criticalmention.com",
                 description: 'Target URL to scan',
                 name: 'TARGET')
     }
@@ -46,14 +46,14 @@ pipeline {
                     echo "Pulling up the latest stable $CONTAINER_NAME ZAP container --> End"
 
                     echo "Starting ZAP container and exposing the API port --> Start"
-                    sh """docker run -d --name CONTAINER_NAME -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
+                    sh """docker run -d --name $CONTAINER_NAME -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
 
                     // Wait for a brief moment to allow the container to fully start
                     sleep(time: 30, unit: 'SECONDS')
 
                     echo "Printing container logs:"
                     sh '''
-                    docker logs owasp
+                    docker logs $CONTAINER_NAME
                     '''
 
                     sh '''
