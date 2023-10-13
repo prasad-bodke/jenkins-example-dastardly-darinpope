@@ -1,30 +1,33 @@
 def scan_type
 def target
 def authToken
+def contextName = "myContext" // Name of the ZAP context
 
 pipeline {
     agent any
-    
+
     environment {
         AUTH_USERNAME = 'Tester01'
         AUTH_PASSWORD = 'welcome123'
-        CONTAINER_NAME = 'owasp-prasad'
+        CONTAINER_NAME = 'owasp'
+        AUTH_SCRIPT_PATH = '/path/to/your-auth-script.script'
     }
-    
+
     parameters {
         choice(choices: ["Baseline", "APIS", "Full"],
-                description: 'Type of scan that is going to perform inside the container',
+                description: 'Type of scan to perform inside the container',
                 name: 'SCAN_TYPE')
 
         string(defaultValue: "https://qa2.criticalmention.com/allmedia/search",
                 description: 'Target URL to scan',
                 name: 'TARGET')
     }
+
     stages {
         stage('Pipeline Info') {
             steps {
                 script {
-                    echo "<--Parameter Initialization-->"
+                    echo "<-- Parameter Initialization -->"
                     echo """
                     The current parameters are:
                         Scan Type: ${params.SCAN_TYPE}
@@ -33,95 +36,98 @@ pipeline {
                 }
             }
         }
-         
-        stage('Setting up OWASP ZAP docker container') {
+
+        stage('Setting up OWASP ZAP Docker container') {
             steps {
                 script {
-                    echo "Pulling up last stable OWASP ZAP container --> Start"
+                    echo "Pulling up the latest stable OWASP ZAP container --> Start"
                     sh 'docker pull owasp/zap2docker-stable:latest'
-                    echo "Pulling up last VMS container --> End"
+                    echo "Pulling up the latest stable OWASP ZAP container --> End"
 
-                    echo "Starting ZAP container and expose the API port --> Start"
-                    sh """docker run -d --name owasp-prasad -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
-                    
+                    echo "Starting ZAP container and exposing the API port --> Start"
+                    sh """docker run -d --name owasp -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
+
                     // Wait for a brief moment to allow the container to fully start
-                    sleep(time: 20, unit: 'SECONDS')
-                    
+                    sleep(time: 60, unit: 'SECONDS')
+
                     echo "Printing container logs:"
                     sh '''
-                    docker logs owasp-prasad
+                    docker logs owasp
                     '''
-                    
+
                     sh '''
                     docker images
                     '''
-                    
+
                     sh '''
                     docker ps
                     '''
                 }
             }
         }
-        
-        stage('Prepare wrk directory') {
-             steps {
-                 script {
-                     sh '''
-                     docker exec owasp-prasad mkdir /zap/wrk
-                     '''
-                 }
-             }
-        }
 
-        stage('copy context file into container if exists') {
+        stage('Prepare wrk directory') {
             steps {
                 script {
                     sh '''
-                    docker cp ./contexts/CMContext.context owasp-prasad:/home/zap/default
+                    docker exec owasp mkdir /zap/wrk
                     '''
                 }
             }
         }
 
-        stage('Scanning target on owasp container') {
+        stage('Upload ZAP Context and Auth Script') {
             steps {
                 script {
-                    // Load your ZAP Context using the ZAP API
-                    sh "curl -X POST http://localhost:8171/JSON/context/action/includeContextInContext?contextName=myContext&contextName=Default+Context"
+                    // Upload the ZAP context file and authentication script
+                    sh """
+                    docker cp /path/to/your-context-file.context owasp:/zap/wrk/$contextName.context
+                    docker cp $AUTH_SCRIPT_PATH owasp:/zap/wrk/auth-script.script
+                    """
+                }
+            }
+        }
 
+        stage('Scanning target on OWASP container') {
+            steps {
+                script {
                     scan_type = "${params.SCAN_TYPE}"
                     echo "----> scan_type: $scan_type"
+
+                    // Load your ZAP Context using the ZAP API
+                    sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?contextName=$contextName&file=/zap/wrk/$contextName.context"
+
                     if (scan_type == "Baseline") {
                         sh """
-                        docker exec owasp-prasad zap-baseline.py \
+                        docker exec owasp zap-baseline.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-config replacer.full_list(0).description=AuthorizationHeader -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization -config replacer.full_list(0).regex=false -config replacer.full_list(0).replacement=$authToken"
+                        -J "-scriptname auth-script.script"
                         """
                     } else if (scan_type == "APIS") {
                         sh """
-                        docker exec owasp-prasad zap-api-scan.py \
+                        docker exec owasp zap-api-scan.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-config replacer.full_list(0).description=AuthorizationHeader -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization -config replacer.full_list(0).regex=false -config replacer.full_list(0).replacement=$authToken"
+                        -J "-scriptname auth-script.script"
                         """
                     } else if (scan_type == "Full") {
                         sh """
-                        docker exec owasp-prasad zap-full-scan.py \
+                        docker exec owasp zap-full-scan.py \
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -J "-config replacer.full_list(0).description=AuthorizationHeader -config replacer.full_list(0).enabled=true -config replacer.full_list(0).matchtype=REQ_HEADER -config replacer.full_list(0).matchstr=Authorization -config replacer.full_list(0).regex=false -config replacer.full_list(0).replacement=$authToken"
+                        -J "-scriptname auth-script.script"
                         """
                     } else {
                         echo "Something went wrong..."
                     }
-                    
+
                     // Capture ZAP logs
                     sh """
-                    docker logs owasp-prasad > zap_logs.txt
+                    docker logs owasp > zap_logs.txt
                     """
                 }
             }
@@ -131,11 +137,11 @@ pipeline {
             steps {
                 script {
                     sh """
-                    docker cp owasp-prasad:/zap/wrk/report.xml ${WORKSPACE}/report.xml
+                    docker cp owasp:/zap/wrk/report.xml ${WORKSPACE}/report.xml
                     """
-                     
+
                     sh """
-                    docker cp owasp-prasad:/zap/wrk/report.html ${WORKSPACE}/report.html
+                    docker cp owasp:/zap/wrk/report.html ${WORKSPACE}/report.html
                     """
                 }
             }
@@ -149,8 +155,8 @@ pipeline {
         always {
             echo "Removing container"
             sh '''
-            docker stop owasp-prasad
-            docker rm owasp-prasad
+            docker stop owasp
+            docker rm owasp
             '''
         }
     }
