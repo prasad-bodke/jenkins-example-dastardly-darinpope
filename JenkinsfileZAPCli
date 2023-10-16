@@ -11,7 +11,7 @@ pipeline {
         string(defaultValue: "https://qa2.criticalmention.com",
                 description: 'Target URL to scan',
                 name: 'TARGET_URL')
-        string(defaultValue: "/var/lib/jenkins/default.context",
+        string(defaultValue: "/context/default.context",
                 description: 'Context file path for authenticated scan',
                 name: 'CONTEXT_FILE')
         string(defaultValue: "CTV",
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh '''
                 # Run ZAP container in daemon mode
-                CONTAINER_ID=$(docker run -v $(pwd):/zap/wrk/:rw -u zap --rm -d owasp/zap2docker-weekly zap.sh -daemon -host 127.0.0.1 -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.proxyChain.enabled=true -config connection.proxyChain.hostName=$PROXY_HOST -config connection.proxyChain.port=$PROXY_PORT)
+                CONTAINER_ID=$(docker run -v $(pwd):/zap/wrk/:rw -u zap --rm -d owasp/zap2docker-weekly zap.sh -daemon -host 127.0.0.1 -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.proxyChain.enabled=true)
                 
                 # Check if ZAP is running
                 docker exec $CONTAINER_ID zap-cli status -t 120
