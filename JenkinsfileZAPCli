@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage ('ZAP PenTest') {
+            steps {
+                sh '''
+                # Run ZAP container in daemon mode
+                CONTAINER_ID=$(docker run -v $(pwd):/zap/wrk/:rw -u zap --rm -d owasp/zap2docker-weekly zap.sh -daemon -host 127.0.0.1 -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.proxyChain.enabled=true -config connection.proxyChain.hostName=$PROXY_HOST -config connection.proxyChain.port=$PROXY_PORT)
+                
+                # Check if ZAP is running
+                docker exec $CONTAINER_ID zap-cli status -t 120
+                
+                # Copy context file into the container and import it into ZAP
+                docker cp $CONTEXT_FILE $CONTAINER_ID:/zap/wrk/$CONTEXT_NAME.context
+                docker exec $CONTAINER_ID zap-cli -v context import /zap/wrk/$CONTEXT_NAME.context
+                
+                # Required to set following param,
+                # because ZAP commands will return non-zero value for any web app vulnerabilities discovered,
+                # and thereby Jenkins will mark the entire pipeline failed and exit the script
+                set +e
+                
+                # Open the target URL using the ZAP proxy
+                docker exec $CONTAINER_ID zap-cli open-url $TARGET_URL
+                
+                # Run the spider against the target URL
+                docker exec $CONTAINER_ID zap-cli -v spider --context-name $CONTEXT_NAME --user-name $CONTEXT_USER $TARGET_URL
+                
+                # Run an Active Scan against the target URL
+                docker exec $CONTAINER_ID zap-cli -v active-scan --scanners all --recursive --context-name $CONTEXT_NAME --user-name $CONTEXT_USER $TARGET_URL
+                
+                # Create a directory for reports
+                REPORT_DIR="$(pwd)/out"
+                if [ ! -d "$REPORT_DIR" ]; then
+                mkdir $REPORT_DIR && chmod 777 $REPORT_DIR
+                fi
+                
+                # Show alerts in the Pipeline console and generate a html report in $REPORT_DIR
+                docker exec $CONTAINER_ID zap-cli alerts
+                docker exec $CONTAINER_ID zap-cli -v report --output-format html --output ./wrk/out/$REPORT_FILE
+                
+                set -e
+                
+                # Stop ZAP container
+                docker stop $CONTAINER_ID
+                '''
+                // Archive report file
+                archiveArtifacts artifacts: 'out/*.html', fingerprint: true
+                }
+            }
+        }
+        post {
+            always {
+            // Clean up workspace directory
+            deleteDir()
+        }
+    }
+}
