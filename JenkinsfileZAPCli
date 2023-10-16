@@ -75,8 +75,14 @@ pipeline {
         }
         post {
             always {
-            // Clean up workspace directory
-            deleteDir()
-        }
+                docker stop 835ab1d9fce776f4a52f254178f8794182c9d48997e501fabe31d289755567ba
+                docker rm 835ab1d9fce776f4a52f254178f8794182c9d48997e501fabe31d289755567ba
+                
+                docker stop $CONTAINER_ID
+                docker rm $CONTAINER_ID
+                
+                // Clean up workspace directory
+                deleteDir()
+            }
     }
 }
