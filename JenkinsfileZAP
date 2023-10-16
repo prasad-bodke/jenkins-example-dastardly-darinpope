@@ -8,8 +8,8 @@ pipeline {
     agent any
 
     environment {
-        AUTH_USERNAME = 'Tester01'
-        AUTH_PASSWORD = 'welcome123'
+        AUTH_USERNAME = 'test'
+        AUTH_PASSWORD = 'test'
         FILE_PATH = 'context'
     }
 
