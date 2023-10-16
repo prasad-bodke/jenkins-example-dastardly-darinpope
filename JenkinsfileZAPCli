@@ -11,7 +11,7 @@ pipeline {
         string(defaultValue: "https://qa2.criticalmention.com",
                 description: 'Target URL to scan',
                 name: 'TARGET_URL')
-        string(defaultValue: "/context/default.context",
+        string(defaultValue: "/contexts/CTVAuthentication.context",
                 description: 'Context file path for authenticated scan',
                 name: 'CONTEXT_FILE')
         string(defaultValue: "CTV",
