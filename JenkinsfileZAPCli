@@ -1,6 +1,30 @@
 pipeline {
     agent any
-    
+
+    parameters {
+        choice(choices: ["Baseline", "APIS", "Full"],
+                description: 'Type of scan to perform inside the container',
+                name: 'SCAN_TYPE')
+        string(defaultValue: "8171",
+                description: 'ZAP_PORT to configure ZAP',
+                name: 'ZAP_PORT')
+        string(defaultValue: "https://qa2.criticalmention.com",
+                description: 'Target URL to scan',
+                name: 'TARGET_URL')
+        string(defaultValue: "/var/lib/jenkins/default.context",
+                description: 'Context file path for authenticated scan',
+                name: 'CONTEXT_FILE')
+        string(defaultValue: "CTV",
+                description: 'Context name for authenticated scan',
+                name: 'CONTEXT_NAME')
+        string(defaultValue: "guest",
+                description: 'Context user',
+                name: 'CONTEXT_USER')
+        string(defaultValue: "CTV-Scan.html",
+                description: 'Report file name',
+                name: 'REPORT_FILE')
+    }
+
     stages {
         stage ('ZAP PenTest') {
             steps {
