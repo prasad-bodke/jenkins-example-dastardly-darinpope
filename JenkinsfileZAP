@@ -95,7 +95,7 @@ pipeline {
 
                     // Load your ZAP Context using the ZAP API
                     sh """
-                    docker exec ${CONTAINER_NAME} curl -X POST http://localhost:8171/JSON/context/action/loadContext/ \
+                    docker exec ${CONTAINER_NAME} curl -X POST 'http://localhost:8171/JSON/context/action/loadContext' \
                     -d 'contextFile=/zap/wrk/$FILE_PATH/$contextName' \
                     -d 'contextName=TestContext' \
                     -d 'apikey=12345'
