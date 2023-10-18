@@ -1,7 +1,7 @@
 def scan_type
 def target
 def authToken
-def contextName = "CTVAuthentication.context" // Name of the ZAP context
+def contextName = "CTVAuth.context" // Name of the ZAP context
 def scriptName = "CTVAuth.js"  // Name of script file
 
 pipeline {
@@ -94,12 +94,14 @@ pipeline {
                     sh """ docker exec ${CONTAINER_NAME} curl http://localhost:8171 """
 
                     // Load your ZAP Context using the ZAP API
-                    sh """
-                    docker exec ${CONTAINER_NAME} curl -X POST 'http://localhost:8171/JSON/context/action/loadContext' \
-                    -d 'contextFile=/zap/wrk/$FILE_PATH/$contextName' \
-                    -d 'contextName=TestContext' \
-                    -d 'apikey=12345'
-                    """
+                     sh """
+                     docker exec ${CONTAINER_NAME} curl -X POST 'http://localhost:8171/JSON/context/action/loadContext' \
+                     -d 'contextFile=/zap/wrk/$contextName' \
+                     -d 'contextName=TestContext' \
+                     -d 'apikey=12345'
+                     """
+
+                    //sh "docker exec -d owasp zap.sh -verbosity INFO -p 8171 --api-key 12345 -dir /zap/wrk context import /zap/wrk/$contextName"
 
                     scan_type = "${params.SCAN_TYPE}"
                     echo "----> scan_type: $scan_type"
@@ -112,8 +114,8 @@ pipeline {
                         -r report.html \
                         //-J "-scriptname $scriptName"
                         -J -l INFO \
-                        -c /zap/wrk/context.context \
-                        -i /zap/wrk/auth.script
+                        -c /zap/wrk/$contextName \
+                        -i /zap/wrk/$scriptName
                         """
                     } else if (scan_type == "APIS") {
                         sh """
@@ -123,8 +125,8 @@ pipeline {
                         -r report.html \
                         //-J "-scriptname $scriptName"
                         -J -l INFO \
-                        -c /zap/wrk/context.context \
-                        -i /zap/wrk/auth.script
+                        -c /zap/wrk/$contextName \
+                        -i /zap/wrk/$scriptName
                         """
                     } else if (scan_type == "Full") {
                         sh """
@@ -134,8 +136,8 @@ pipeline {
                         -r report.html \
                         //-J "-scriptname $scriptName"
                         -J -l INFO \
-                        -c /zap/wrk/context.context \
-                        -i /zap/wrk/auth.script
+                        -c /zap/wrk/$contextName \
+                        -i /zap/wrk/$scriptName
                         """
                     } else {
                         echo "Something went wrong..."
