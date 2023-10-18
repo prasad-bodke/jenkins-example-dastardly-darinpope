@@ -82,6 +82,7 @@ pipeline {
                     '''
                     echo "The context and script file is copied"
         			sh '''docker exec ${CONTAINER_NAME} ls /zap/wrk/contexts'''
+        			sh '''docker exec ${CONTAINER_NAME} ls /zap/wrk'''
                     sh '''docker exec ${CONTAINER_NAME} pwd'''
                 }
             }
@@ -90,6 +91,7 @@ pipeline {
         stage('Scanning target on ZAP container') {
             steps {
                 script {
+                    ERROR
                     // Check whether ZAP is running on the configured port
                     sh """ docker exec ${CONTAINER_NAME} curl http://localhost:8171 """
 
