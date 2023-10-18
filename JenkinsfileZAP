@@ -91,7 +91,7 @@ pipeline {
             steps {
                 script {
                     // Load your ZAP Context using the ZAP API
-                    sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?contextName=$contextName&file=/zap/wrk/$contextName"
+                    sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?file=/zap/wrk/$FILE_PATH/$contextName&contextName=TestContext"
 
                     scan_type = "${params.SCAN_TYPE}"
                     echo "----> scan_type: $scan_type"
