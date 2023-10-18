@@ -49,7 +49,7 @@ pipeline {
                     sh """docker run -d --name ${CONTAINER_NAME} -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
                     
                     // Wait for a brief moment to allow the container to fully start
-                    sleep(time: 20, unit: 'SECONDS')
+                    sleep(time: 10, unit: 'SECONDS')
 
                     sh '''
                     docker images
@@ -81,7 +81,7 @@ pipeline {
                     docker cp $FILE_PATH/$scriptName ${CONTAINER_NAME}:/zap/wrk/$scriptName
                     '''
                     echo "The context and script file is copied"
-        			sh '''docker exec ${CONTAINER_NAME} ls /zap/wrk'''
+        			sh '''docker exec ${CONTAINER_NAME} ls /zap/wrk/contexts'''
                     sh '''docker exec ${CONTAINER_NAME} pwd'''
                 }
             }
@@ -90,11 +90,11 @@ pipeline {
         stage('Scanning target on ${CONTAINER_NAME} container') {
             steps {
                 script {
-                    scan_type = "${params.SCAN_TYPE}"
-                    echo "----> scan_type: $scan_type"
-
                     // Load your ZAP Context using the ZAP API
                     sh "curl -X POST http://localhost:8171/JSON/context/action/loadContext/?contextName=$contextName&file=/zap/wrk/$contextName"
+
+                    scan_type = "${params.SCAN_TYPE}"
+                    echo "----> scan_type: $scan_type"
 
                     if (scan_type == "Baseline") {
                         sh """
