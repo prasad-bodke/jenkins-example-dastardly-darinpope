@@ -87,12 +87,14 @@ pipeline {
             }
         }
 
-        stage('Scanning target on ${CONTAINER_NAME} container') {
+        stage('Scanning target on ZAP container') {
             steps {
                 script {
                     // Load your ZAP Context using the ZAP API
                     sh """
-                    docker exec ${CONTAINER_NAME} curl -X POST http://localhost:8171/JSON/context/action/loadContext -d 'contextName=TestContext' -d contextFile=/zap/wrk/$FILE_PATH/$contextName'
+                    docker exec ${CONTAINER_NAME} curl -X POST http://localhost:8171/JSON/context/action/loadContext/ \
+                        -d 'contextName=TestContext' /
+                        -d contextFile=/zap/wrk/$FILE_PATH/$contextName'
                     """
 
                     scan_type = "${params.SCAN_TYPE}"
