@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
     <context>
-        <name>CTVAuthentication</name>
+        <name>CTVAuth</name>
         <desc/>
         <inscope>true</inscope>
         <incregexes>https://qa2.criticalmention.com.*</incregexes>
@@ -60,7 +60,7 @@
             <pollfreq>60</pollfreq>
             <pollunits>REQUESTS</pollunits>
             <script>
-                <name>CTVAuth</name>
+                <name>CTVAuth.js</name>
                 <params>RW5kcG9pbnRGb3JBdXRoZW50aWNhdGlvbg==:aHR0cHM6Ly9xYTIuY3JpdGljYWxtZW50aW9uLmNvbS9hbGxtZWRpYS9zZXNzaW9u</params>
             </script>
         </authentication>
