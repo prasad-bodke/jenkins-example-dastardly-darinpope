@@ -97,7 +97,8 @@ pipeline {
                     sh """
                     docker exec ${CONTAINER_NAME} curl -X POST http://localhost:8171/JSON/context/action/loadContext/ \
                     -d 'contextFile=/zap/wrk/$FILE_PATH/$contextName' \
-                    -d 'contextName=TestContext'
+                    -d 'contextName=TestContext' \
+                    -d 'apikey=12345'
                     """
 
                     scan_type = "${params.SCAN_TYPE}"
