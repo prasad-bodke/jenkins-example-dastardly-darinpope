@@ -51,11 +51,6 @@ pipeline {
                     // Wait for a brief moment to allow the container to fully start
                     sleep(time: 20, unit: 'SECONDS')
 
-                    echo "Printing container logs:"
-                    sh '''
-                    docker logs ${CONTAINER_NAME}
-                    '''
-
                     sh '''
                     docker images
                     '''
@@ -85,8 +80,8 @@ pipeline {
                     docker cp $FILE_PATH/$contextName ${CONTAINER_NAME}:/zap/wrk/$contextName
                     docker cp $FILE_PATH/$scriptName ${CONTAINER_NAME}:/zap/wrk/$scriptName
                     echo "The context and script file is copied"
-                    sh "docker exec ${CONTAINER_NAME} ls /zap/wrk"
-                    sh "docker exec ${CONTAINER_NAME} ls"
+
+        			sh "docker exec ${CONTAINER_NAME} ls /zap/wrk"
                     sh "docker exec ${CONTAINER_NAME} pwd"
                     """
                 }
@@ -167,6 +162,12 @@ pipeline {
             archiveArtifacts artifacts: 'report.*'
         }
         always {
+
+            echo "Printing container logs:"
+            sh '''
+            docker logs ${CONTAINER_NAME}
+            '''
+
             echo "Removing container"
             sh '''
             docker stop ${CONTAINER_NAME}
