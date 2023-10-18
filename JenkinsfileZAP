@@ -49,7 +49,7 @@ pipeline {
                     sh """docker run -d --name ${CONTAINER_NAME} -p 8171:8171 -v /var/lib/jenkins:/var/lib/jenkins -w /var/lib/jenkins owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8171 -config api.key=12345 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true """
                     
                     // Wait for a brief moment to allow the container to fully start
-                    sleep(time: 10, unit: 'SECONDS')
+                    sleep(time: 60, unit: 'SECONDS')
 
                     sh '''
                     docker images
@@ -93,8 +93,8 @@ pipeline {
                     // Load your ZAP Context using the ZAP API
                     sh """
                     docker exec ${CONTAINER_NAME} curl -X POST http://localhost:8171/JSON/context/action/loadContext/ \
-                        -d 'contextName=TestContext' /
-                        -d contextFile=/zap/wrk/$FILE_PATH/$contextName'
+                        -d 'contextFile=/zap/wrk/$FILE_PATH/$contextName' /
+                        -d 'contextName=TestContext'
                     """
 
                     scan_type = "${params.SCAN_TYPE}"
