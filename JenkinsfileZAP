@@ -85,7 +85,7 @@ pipeline {
                     docker cp $FILE_PATH/$contextName ${CONTAINER_NAME}:/zap/wrk/$contextName
                     docker cp $FILE_PATH/$scriptName ${CONTAINER_NAME}:/zap/wrk/$scriptName
                     echo "The context and script file is copied"
-                    sh "docker exec ${CONTAINER_NAME} ls /zap/wrk"
+                    //sh "docker exec ${CONTAINER_NAME} ls /zap/wrk"
                     sh "docker exec ${CONTAINER_NAME} ls"
                     sh "docker exec ${CONTAINER_NAME} pwd"
                     """
