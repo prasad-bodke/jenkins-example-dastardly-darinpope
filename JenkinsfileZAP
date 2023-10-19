@@ -103,7 +103,7 @@ pipeline {
                      """
                     echo "load context successful"
 
-                    sh "docker exec -d owasp zap.sh -verbosity INFO -p 8171 --api-key 12345 -dir /zap/wrk context import /zap/wrk/contexts/$contextName"
+                    sh "docker exec -d ${CONTAINER_NAME} zap.sh -verbosity INFO -p 8171 --api-key 12345 -dir /zap/wrk context import /zap/wrk/contexts/$contextName"
                     echo "import context successful"
 
                     scan_type = "${params.SCAN_TYPE}"
