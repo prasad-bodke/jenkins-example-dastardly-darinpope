@@ -118,7 +118,7 @@ pipeline {
                         -c /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
-                        -J -l INFO
+                        -J "-scriptname /zap/wrk/contexts/$scriptName"
                         """
                     } else if (scan_type == "APIS") {
                         sh """
@@ -129,7 +129,7 @@ pipeline {
                         -c /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
-                        -J -l INFO
+                        -J "-scriptname /zap/wrk/contexts/$scriptName"
                         """
                     } else if (scan_type == "Full") {
                         sh """
@@ -140,7 +140,7 @@ pipeline {
                         -c /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
-                        -J -l INFO
+                        -J "-scriptname /zap/wrk/contexts/$scriptName"
                         """
                     } else {
                         echo "Something went wrong..."
