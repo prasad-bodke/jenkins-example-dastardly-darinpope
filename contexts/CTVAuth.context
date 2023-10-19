@@ -5,6 +5,52 @@
         <desc/>
         <inscope>true</inscope>
         <incregexes>https://qa2.criticalmention.com.*</incregexes>
+        <excregexes>
+                https://akm-img-a-in.tosshub.com/
+                https://analytics.churnzero.net/
+                https://analytics.google.com/
+                https://api-iam.intercom.io/
+                https://apis.google.com/
+                https://app.launchdarkly.com/
+                https://assets.criticalmention.com/
+                https://cdn.images.express.co.uk/
+                https://connect.facebook.net/en_US/
+                https://content-analyticsadmin.googleapis.com/
+                https://content-analyticsdata.googleapis.com/
+                https://economictimes.indiatimes.com/
+                https://edge.fullstory.com/
+                https://events.launchdarkly.com/
+                https://feeds.abplive.com/
+                https://i0.wp.com/
+                https://img-cdn.thepublive.com/
+                https://img.youtube.com/
+                https://js.intercomcdn.com/
+                https://lpcdn.lpsnmedia.net/
+                https://lptag.liveperson.net/
+                https://maps.googleapis.com/
+                https://nation.africa/
+                https://ny108.assets.criticalmention.com/
+                https://oneworldpress.files.wordpress.com/
+                https://rs.fullstory.com/
+                https://s3.us-east-2.amazonaws.com/
+                https://sec-radio009.assets.criticalmention.com/
+                https://static.xx.fbcdn.net/
+                https://stats.g.doubleclick.net/
+                https://sureshsubrahmanyan.files.wordpress.com/
+                https://t1034.us1app.churnzero.net/
+                https://translatingcuba.com/
+                https://ussanews.com/
+                https://va.v.liveperson.net/
+                https://widget.intercom.io/
+                https://www.agniban.com/
+                https://www.devdiscourse.com/
+                https://www.facebook.com/
+                https://www.google-analytics.com/
+                https://www.googletagmanager.com/
+                https://www.orissapost.com/
+                http://www.rediff.com/
+        </excregexes>
+
         <tech>
             <include>Db</include>
             <include>Db.CouchDB</include>
@@ -42,6 +88,7 @@
             <include>WS.Apache</include>
             <include>WS.IIS</include>
             <include>WS.Tomcat</include>
+            <exclude>Language.PHP</exclude>
         </tech>
         <urlparser>
             <class>org.zaproxy.zap.model.StandardParameterParser</class>
