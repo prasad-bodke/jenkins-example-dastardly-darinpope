@@ -94,13 +94,13 @@ pipeline {
                     // Check whether ZAP is running on the configured port
                     // sh """ docker exec ${CONTAINER_NAME} curl http://localhost:8171 """
 
-                    // Load your ZAP Context using the ZAP API
-                     sh """
-                     docker exec ${CONTAINER_NAME} curl -X POST 'http://localhost:8171/JSON/context/action/loadContext' \
-                     -d 'contextFile=/zap/wrk/contexts/$contextName' \
-                     -d 'contextName=TestContext' \
-                     -d 'apikey=12345'
-                     """
+                   //  Load your ZAP Context using the ZAP API
+                   //  sh """
+                   //  docker exec ${CONTAINER_NAME} curl -X POST 'http://localhost:8171/JSON/context/action/loadContext' \
+                   //  -d 'contextFile=/zap/wrk/contexts/$contextName' \
+                   //  -d 'contextName=TestContext' \
+                   //  -d 'apikey=12345'
+                   //  """
                     echo "load context successful"
 
                     sh "docker exec -d ${CONTAINER_NAME} zap.sh -verbosity INFO -p 8171 --api-key 12345 -dir /zap/wrk context import /zap/wrk/contexts/$contextName"
@@ -129,7 +129,8 @@ pipeline {
                         -c /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
-                        -J "-scriptname /zap/wrk/contexts/$scriptName"
+                        -J "-scriptname /zap/wrk/contexts/$scriptName" \
+                        -f openapi
                         """
                     } else if (scan_type == "Full") {
                         sh """
