@@ -115,10 +115,10 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        //-J "-scriptname $scriptName"
-                        -J -l INFO \
-                        -c /zap/wrk/$contextName \
-                        -i /zap/wrk/$scriptName
+                        -c /zap/wrk/contexts/$contextName \
+                        -i /zap/wrk/contexts/$scriptName \
+                        -z "-config username=test -config password=test" \
+                        -J -l INFO
                         """
                     } else if (scan_type == "APIS") {
                         sh """
@@ -126,10 +126,10 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        //-J "-scriptname $scriptName"
-                        -J -l INFO \
-                        -c /zap/wrk/$contextName \
-                        -i /zap/wrk/$scriptName
+                        -c /zap/wrk/contexts/$contextName \
+                        -i /zap/wrk/contexts/$scriptName \
+                        -z "-config username=test -config password=test" \
+                        -J -l INFO
                         """
                     } else if (scan_type == "Full") {
                         sh """
@@ -137,10 +137,10 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        //-J "-scriptname $scriptName"
-                        -J -l INFO \
-                        -c /zap/wrk/$contextName \
-                        -i /zap/wrk/$scriptName
+                        -c /zap/wrk/contexts/$contextName \
+                        -i /zap/wrk/contexts/$scriptName \
+                        -z "-config username=test -config password=test" \
+                        -J -l INFO
                         """
                     } else {
                         echo "Something went wrong..."
