@@ -107,7 +107,7 @@ pipeline {
                     echo "import context successful"
 
                     sh """
-                    docker exec ${CONTAINER_NAME} curl 'http://localhost:8171/JSON/context/view/contextList'
+                    docker exec ${CONTAINER_NAME} curl 'http://localhost:8171/JSON/context/view/contextList' -d 'apikey=12345'
                     """
 
                     scan_type = "${params.SCAN_TYPE}"
