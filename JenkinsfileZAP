@@ -101,8 +101,11 @@ pipeline {
                    //  -d 'contextName=TestContext' \
                    //  -d 'apikey=12345'
                    //  """
-                    echo "load context successful"
-
+                   //  echo "load context successful"
+                    sh """
+                    docker exec ${CONTAINER_NAME} curl GET 'http://localhost:8171/JSON/context/view/contextList'
+                    """
+                     
                     sh "docker exec -d ${CONTAINER_NAME} zap.sh -verbosity INFO -p 8171 --api-key 12345 -dir /zap/wrk context import /zap/wrk/contexts/$contextName"
                     echo "import context successful"
 
@@ -115,7 +118,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -c /zap/wrk/contexts/$contextName \
+                        -n /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
                         -J "-scriptname /zap/wrk/contexts/$scriptName"
@@ -126,7 +129,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -c /zap/wrk/contexts/$contextName \
+                        -n /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
                         -J "-scriptname /zap/wrk/contexts/$scriptName" \
@@ -138,7 +141,7 @@ pipeline {
                         -t ${params.TARGET} \
                         -x report.xml \
                         -r report.html \
-                        -c /zap/wrk/contexts/$contextName \
+                        -n /zap/wrk/contexts/$contextName \
                         -i /zap/wrk/contexts/$scriptName \
                         -z "-config username=test -config password=test" \
                         -J "-scriptname /zap/wrk/contexts/$scriptName"
